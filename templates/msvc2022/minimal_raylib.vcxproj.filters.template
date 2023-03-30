@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{{ "{" }}{{sources_files_guid}}{{ "}" }}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{{ "{" }}{{header_files_guid}}{{ "}" }}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{{ "{" }}{{resource_files_guid}}{{ "}" }}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="contrib">
+      <UniqueIdentifier>{{ "{" }}{{contrib_guid}}{{ "}" }}</UniqueIdentifier>
+    </Filter>
+{%- if with_raylib %}
+    <Filter Include="contrib\raylib">
+      <UniqueIdentifier>{{ "{" }}{{raylib_guid}}{{ "}" }}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\raylib\src">
+      <UniqueIdentifier>{{ "{" }}{{raylib_src_guid}}{{ "}" }}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="contrib\raylib\inc">
+      <UniqueIdentifier>{{ "{" }}{{raylib_inc_guid}}{{ "}" }}</UniqueIdentifier>
+    </Filter>
+{%- endif %}
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+{%- if with_raylib %}
+    <ClCompile Include="..\contrib\raylib\raudio.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rcore.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rglfw.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rmodels.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rshapes.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rtext.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\rtextures.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\contrib\raylib\utils.c">
+      <Filter>contrib\raylib\src</Filter>
+    </ClCompile>
+{%- endif %}
+  </ItemGroup>
+{%- if with_raylib %}
+  <ItemGroup>
+    <ClInclude Include="..\contrib\raylib\config.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\raygui.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\raylib.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\raymath.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\rcamera.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\rgestures.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\rlgl.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\contrib\raylib\utils.h">
+      <Filter>contrib\raylib\inc</Filter>
+    </ClInclude>
+  </ItemGroup>
+{%- endif %}
+{%- if with_raylib %}
+  <ItemGroup>
+    <ResourceCompile Include="..\contrib\raylib\raylib.rc">
+      <Filter>contrib\raylib\inc</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+{%- endif %}
+{%- if with_raylib %}
+  <ItemGroup>
+    <Image Include="..\contrib\raylib\raylib.ico">
+      <Filter>contrib\raylib\inc</Filter>
+    </Image>
+  </ItemGroup>
+{%- endif %}
+</Project>

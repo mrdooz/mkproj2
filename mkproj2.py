@@ -35,7 +35,9 @@ from jinja2 import Environment, FileSystemLoader
 
 JOIN = os.path.join
 
-def generate_project(project_name, dest_dir, platform, libs):
+def generate_project(project_name, dest_dir : str, platform, libs):
+
+    dest_dir = dest_dir.replace('\\', '/')
 
     # Either create the destination directory, or make sure it's empty
     if os.path.exists(dest_dir) and os.path.isdir(dest_dir):
@@ -45,7 +47,7 @@ def generate_project(project_name, dest_dir, platform, libs):
         os.makedirs(dest_dir)
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
-    src_dir = JOIN(script_dir, 'src/')
+    # src_dir = JOIN(script_dir, 'src/')
     package_dir = JOIN(script_dir, 'packages/')
 
     project_dir = JOIN(dest_dir, '_win32')
@@ -55,6 +57,7 @@ def generate_project(project_name, dest_dir, platform, libs):
 
     with_raylib = 'raylib' in libs
     with_raylib_gui = 'raylibgui' in libs
+    with_livepp = 'live++' in libs
             
     environment = Environment(loader=FileSystemLoader(JOIN(script_dir,"templates/msvc2022")))
 
@@ -64,52 +67,46 @@ def generate_project(project_name, dest_dir, platform, libs):
         with open(dest_path, 'wt', encoding="utf-8") as f:
             f.write(str(content))
 
-    apply_template('minimal_raylib.sln.template', 
-                   {'project_name':project_name,
-                    'project_guid':str(uuid.uuid4()).upper(),
-                    'with_raylib':with_raylib or with_raylib_gui,
-                    'with_raylib_gui': with_raylib_gui,
-                    },
-                    JOIN(project_dir, project_name + '.sln'))
+    template_dict = {
+        'project_name':project_name,
+        'project_guid':str(uuid.uuid4()).upper(),
+        'src_dir':dest_dir,
+        'sources_files_guid':str(uuid.uuid4()).upper(),
+        'header_files_guid':str(uuid.uuid4()).upper(),
+        'resource_files_guid':str(uuid.uuid4()).upper(),
+        'contrib_guid':str(uuid.uuid4()).upper(),
+        'raylib_guid':str(uuid.uuid4()).upper(),
+        'raylib_src_guid':str(uuid.uuid4()).upper(),
+        'raylib_inc_guid':str(uuid.uuid4()).upper(),
+        'with_raylib':with_raylib or with_raylib_gui,
+        'with_raylib_gui': with_raylib_gui,
+        'with_livepp': with_livepp,
+    }
 
-    apply_template('minimal_raylib.vcxproj.filters.template', 
-                   {'project_name':project_name,
-                    'project_guid':str(uuid.uuid4()).upper(),
-                    'sources_files_guid':str(uuid.uuid4()).upper(),
-                    'header_files_guid':str(uuid.uuid4()).upper(),
-                    'resource_files_guid':str(uuid.uuid4()).upper(),
-                    'contrib_guid':str(uuid.uuid4()).upper(),
-                    'raylib_guid':str(uuid.uuid4()).upper(),
-                    'raylib_src_guid':str(uuid.uuid4()).upper(),
-                    'raylib_inc_guid':str(uuid.uuid4()).upper(),
-                    'with_raylib':with_raylib or with_raylib_gui,
-                    'with_raylib_gui': with_raylib_gui,
-                    },
-                    JOIN(project_dir, project_name + '.vcxproj.filters'))
-
-    apply_template('minimal_raylib.vcxproj.template', 
-                   {'project_name':project_name,
-                    'project_guid':str(uuid.uuid4()).upper(),
-                    'with_raylib':with_raylib or with_raylib_gui,
-                    'with_raylib_gui': with_raylib_gui,
-                    },
-                    JOIN(project_dir, project_name + '.vcxproj'))
+    # Create the solution and project files
+    apply_template('minimal_raylib.sln.template', template_dict, JOIN(project_dir, project_name + '.sln'))
+    apply_template('minimal_raylib.vcxproj.filters.template', template_dict, JOIN(project_dir, project_name + '.vcxproj.filters'))
+    apply_template('minimal_raylib.vcxproj.template', template_dict, JOIN(project_dir, project_name + '.vcxproj'))
     
-    # copy over the main.cpp
+    # Create the main.cpp
     if with_raylib_gui:
-        shutil.copy(JOIN(src_dir, 'main_raylib_gui.cpp'), JOIN(dest_dir, 'main.cpp'))
-        pass
+        apply_template('main_raylib_gui.cpp.template', template_dict, JOIN(dest_dir, 'main.cpp'))
     elif with_raylib:
-        shutil.copy(JOIN(src_dir, 'main_raylib.cpp'), JOIN(dest_dir, 'main.cpp'))
+        apply_template('main_raylib.cpp.template', template_dict, JOIN(dest_dir, 'main.cpp'))
     else:
-        shutil.copy(JOIN(src_dir, 'main.cpp'), JOIN(dest_dir, 'main.cpp'))
+        apply_template('main.cpp.template', template_dict, JOIN(dest_dir, 'main.cpp'))
     
-    # extract the packages
-    if with_raylib or with_raylib_gui:
+    # Extract the packages
+    if len(libs) > 0:
         os.makedirs(contrib_dir)
+
+    if with_raylib or with_raylib_gui:
         with zipfile.ZipFile(JOIN(package_dir, 'raylib.zip')) as zip_ref:
             zip_ref.extractall(contrib_dir)
 
+    if with_livepp:
+        with zipfile.ZipFile(JOIN(package_dir, 'livepp.zip')) as zip_ref:
+            zip_ref.extractall(contrib_dir)
 
 class MyWidget(QWidget):
     # Note, the GUI elements hold the data, and then when we press the generate button, we

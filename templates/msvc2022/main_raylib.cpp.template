@@ -1,0 +1,29 @@
+#include "raylib.h"
+
+#include "contrib/LivePP/API/LPP_API_x64_CPP.h"
+
+int main(void)
+{
+    lpp::LppDefaultAgent lppAgent = lpp::LppCreateDefaultAgent(L"{{src_dir}}/contrib/LivePP");
+    if (!lpp::LppIsValidDefaultAgent(&lppAgent)) {
+        return 1;
+    }
+
+    lppAgent.EnableModule(lpp::LppGetCurrentModulePath(), lpp::LPP_MODULES_OPTION_ALL_IMPORT_MODULES);
+
+    InitWindow(800, 450, "raylib [core] example - basic window");
+
+    while (!WindowShouldClose())
+    {
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        EndDrawing();
+    }
+
+    CloseWindow();
+
+    lpp::LppDestroyDefaultAgent(&lppAgent);
+
+    return 0;
+}

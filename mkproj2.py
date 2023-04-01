@@ -202,6 +202,7 @@ class MyWidget(QWidget):
             if lib.isChecked():
                 libs.append(lib.text().lower())
         try:
+            self.edit_status.setText('')
             generate_project(self.edit_project_name.text(), self.edit_path.text(), self.platform_combo.currentText(), libs)
             self.edit_status.setText('Success!')
         except Exception as e:
